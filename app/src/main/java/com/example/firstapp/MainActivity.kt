@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.firstapp.TaskApplication.Companion.prefs
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,9 +31,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView() {
+        tasks = prefs.getTasks()
         rvTasks.layoutManager = LinearLayoutManager(this)
-        adapter = TaskAdapter(tasks)
+        adapter = TaskAdapter(tasks) { deleteTask(it) } //
         rvTasks.adapter=adapter
+    }
+
+    private fun deleteTask(position:Int){
+        tasks.removeAt(position)
+        adapter.notifyDataSetChanged()
+        prefs.saveTasks(tasks)
     }
 
     private fun initListeners() {
@@ -45,6 +53,8 @@ class MainActivity : AppCompatActivity() {
         val taskToAdd:String=etTask.text.toString()
         tasks.add(taskToAdd)
         adapter.notifyDataSetChanged()
+        etTask.setText("")
+        prefs.saveTasks(tasks)
 
     }
 
